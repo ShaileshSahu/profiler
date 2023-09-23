@@ -1,26 +1,16 @@
 const FileController = require('./file.controller');
-const fs= require("fs");
-v8Profiler.setGenerateType(1);
-const title = new Date().getTime().toString();
-
+const Profiler = require('../../utils/profiler');
 function FileRouter(fastify,options, done) {
     fastify.get("/", async(req,res)=>{
-        v8Profiler.startProfiling(title, true);
-        v8Profiler.startSamplingHeapProfiling();
-
+        
+        const profiler =new Profiler('FileUploadProfile');
+        profiler.startProfiling();
+        profiler.startProfilingHeap();
         const fileController = new FileController();
         const data = await fileController.readFile(res);
-        const profile = v8Profiler.stopProfiling(title);
-        const profileHeap = v8Profiler.stopSamplingHeapProfiling();
-        profile.export(function (error, result) {
-          fs.writeFileSync(`${title}.cpuprofile`, result);
-          profile.delete();
-        });
-        fs.writeFileSync('./shf.heapprofile', JSON.stringify(profileHeap));
-
+        profiler.stopProfiling();
+        profiler.stopProfilingHeap();
         return data;
-        
-        
     });
     done();
     

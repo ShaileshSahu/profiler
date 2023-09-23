@@ -6,7 +6,7 @@ readableStream.setEncoding("binary");
 class FileController {
     async readFile(reply) {        
         const data = fs.readFileSync(path.join(__dirname,'../../people.csv'));
-        // data.toString().replace(",","|");
+        data.toString().replace(',','|');
         return data;
     }
 }
